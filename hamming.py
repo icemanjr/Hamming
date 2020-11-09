@@ -21,12 +21,15 @@ def checkHam(value):
         r = calcRedundBits(m)
         error = findError(value, r)
         if error != 0:
-            if value[error] == 1:
-                value[error] = 0
+            print(error)
+            if value[error] == '1':
+                value = value[:-error] + '0' + value[-(error - 1):]
             else:
-                value[error] = 1
-        for i in range(r):
-            value = value[:-(2**i - 1)] + value[-(2**i - 1):]
+                value = value[:-error] + '1' + value[-error:]
+        for i in range(r, 1, -1):
+            value = value[:-(2**i)] + value[-(2**i - 1):]
+        if r >= 2:
+            value = value[:-2]
         return value
 
     else:
@@ -44,7 +47,7 @@ def findError(arr, nr):
                 val = val ^ int(arr[-1 * j])
 
         result = result + val * (10**i)
-    return int(str(res), 2)
+    return int(str(result), 2)
 
 
 def isBinary(val):
@@ -58,14 +61,14 @@ def isBinary(val):
 
 
 def calcRedundBits(m):
-    for i in range(m):
+    for r in range(m):
         if 2**r >= m + r + 1:
             return r
 
 
 def redundBitPos(data, r):
     j = 0
-    k = 0
+    k = 1
     m = len(data)
     result = ''
 
@@ -74,7 +77,7 @@ def redundBitPos(data, r):
             result = result + '0'
             j += 1
         else:
-            result = result + data[-1 * k]
+            result = result + data[-k]
             k += 1
 
     return result[::-1]
@@ -86,8 +89,12 @@ def calcParity(arr, r):
     for i in range(r):
         val = 0
         for j in range(1, n + 1):
-            if j & (2 ** i) == (2 ** j):
-                val = cal ^ int(arr[-1 * j])
-        arr = arr[:n - (2**j)] + str(val) + arr[n - (2**i) + 1:]
+            print(j, i)
+            temp = j & (2 ** i) == (2 ** i)
+            if temp:
+                print(str(temp) + " : " + arr[-j])
+                val = val ^ int(arr[-j])
+        print(val)
+        arr = arr[:n - (2 ** i)] + str(val) + arr[n - (2 ** i) + 1:]
     return arr
 
