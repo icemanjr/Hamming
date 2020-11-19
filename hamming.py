@@ -21,15 +21,12 @@ def checkHam(value):
         r = calcRedundBits(m)
         error = findError(value, r)
         if error != 0:
-            print(error)
-            if value[error] == '1':
-                value = value[:-error] + '0' + value[-(error - 1):]
+            value_list = list(value)
+            if value_list[-error] == '1':
+                value_list[-error] = '0'
             else:
-                value = value[:-error] + '1' + value[-error:]
-        for i in range(r, 1, -1):
-            value = value[:-(2**i)] + value[-(2**i - 1):]
-        if r >= 2:
-            value = value[:-2]
+                value_list = '1'
+            value = ''.join(map(str, value_list))
         return value
 
     else:
@@ -51,13 +48,12 @@ def findError(arr, nr):
 
 
 def isBinary(val):
+    binary = True
     for i in str(val):
-        if i in '10':
-            binary = True
-        else:
+        if i not in '10':
             binary = False
             break
-        return binary
+    return binary
 
 
 def calcRedundBits(m):
@@ -83,18 +79,27 @@ def redundBitPos(data, r):
     return result[::-1]
 
 
-def calcParity(arr, r):
-    n = len(arr)
+def calcParity(data, r):
+    ch = 0
+    data = list(data)
+    data.reverse()
 
-    for i in range(r):
-        val = 0
-        for j in range(1, n + 1):
-            print(j, i)
-            temp = j & (2 ** i) == (2 ** i)
-            if temp:
-                print(str(temp) + " : " + arr[-j])
-                val = val ^ int(arr[-j])
-        print(val)
-        arr = arr[:n - (2 ** i)] + str(val) + arr[n - (2 ** i) + 1:]
-    return arr
+    for parity in range(0, len(data)):
+        ph = (2**ch)
+        if ph == (parity + 1):
+            startIndex = ph - 1
+            i = startIndex
+            toXor = []
 
+            while i < len(data):
+                block = data[i:i + ph]
+                toXor.extend(block)
+                i += 2*ph
+
+            for z in range(1, len(toXor)):
+                data[startIndex] = int(data[startIndex])^int(toXor[z])
+            ch += 1
+
+    data.reverse()
+    data = ''.join(map(str, data))
+    return data

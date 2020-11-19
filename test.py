@@ -1,18 +1,18 @@
 import hamming
+import corrupt
 
-input = "11111111"
-desired_output = "101011101110"
-wError = "101001111011"
+input = "010010101"
 
 output = hamming.addHam(input)
 print("input: " + input)
 print("Actual: " + output)
 
-output = "111101100111"
+eOutput = corrupt.corrupt(output)
+print("Output after corruption of a single bit: " + eOutput)
 
-eOutput = hamming.checkHam(output)
-r = hamming.calcRedundBits(len(output))
-error = hamming.findError(output, r)
+cOutput = hamming.checkHam(eOutput)
+r = hamming.calcRedundBits(len(eOutput))
+error = hamming.findError(eOutput, r)
 print("Error found in bit: " + str(error))
-print("Error in bit corrected?: \nActual: " + eOutput)
+print("Error corrected? " + cOutput)
 
