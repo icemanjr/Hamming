@@ -33,6 +33,16 @@ def checkHam(value):
         print("Error: checkHam takes a binary input")
 
 
+def removeHam(value):
+    if isBinary(value):
+        m = len(value)
+        r = calcRedundBits(m)
+        value_list = list(value)
+        for i in range(1, r):
+            value_list.pop(m-(2**(r - 1)))
+        return ''.join(map(str, value_list))
+
+
 def findError(arr, nr):
     n = len(arr)
     result = 0
