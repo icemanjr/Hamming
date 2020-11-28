@@ -6,37 +6,54 @@
 import hamming
 
 
-def transfer(filename, newFile):
+def encode(filename, newFile):
+    # Add a Hamming ECC to <filename> and save it to <newFile>
     file = open(filename, "rb")
     trans = open(newFile, "w")
 
-    line = file.readline()
-    for j in range(len(line)):
-        bin = "{0:b}".format(line[j])
-        nline = hamming.addHam(bin)
-        trans.write(nline + " ")
+    for line in file:
+        for j in range(len(line)):
+            bin = "{0:b}".format(line[j])
+            nline = hamming.addHam(bin)
+            trans.write(nline + " ")
 
     file.close()
     trans.close()
 
 
 def decode(filename, newFile):
+    # Remove the Hamming ECC parity bits from <filename> and save it as <newFile>
+    # Note: This does not check the Hamming ECC for errors before removing parity bits
     file = open(filename, "r")
     decode = open(newFile, "w")
 
-    line = file.readline()
-    line = line.split(" ")
-    for c in line:
-        if c != "":
-            nline = hamming.removeHam(c)
-            print(nline)
-            print("Should be: " + str(ord('H')))
-            num = int(nline, 2)
-            num = int(num)
-            print(num)
-            ch = chr(num)
-            print(ch)
-            decode.write(ch)
+    for line in file:
+        line = line.split(" ")
+        for c in line:
+            if c != "":
+                nline = hamming.removeHam(c)
+                num = int(nline, 2)
+                ch = chr(num)
+                decode.write(ch)
+
+    file.close()
+    decode.close()
+
+
+def decodeFix(filename, newFile):
+    # Check the Hamming ECC for errors in <filename>, correct those errors and save the file to <newFile>
+    file = open(filename, "r")
+    decode = open(newFile, "w")
+
+    for line in file:
+        line = line.split(" ")
+        for c in line:
+            if c != "":
+                nline = hamming.checkHam(c)
+                nline = hamming.removeHam(nline)
+                num = int(nline, 2)
+                ch = chr(num)
+                decode.write(ch)
 
     file.close()
     decode.close()

@@ -4,11 +4,12 @@
 
 
 def addHam(value):
+    # Adds a Hamming ECC to a given string of 1's and 0's
     if isBinary(value):
         m = len(value)
         r = calcRedundBits(m)
         data = redundBitPos(value, r)
-        data = calcParity(data, r)
+        data = calcParity(data)
 
         return data
     else:
@@ -16,6 +17,7 @@ def addHam(value):
 
 
 def checkHam(value):
+    # Checks the given string that has been encoded with Hamming ECC for errors and corrects them.
     if isBinary(value):
         m = len(value)
         r = calcRedundBits(m)
@@ -25,7 +27,7 @@ def checkHam(value):
             if value_list[-error] == '1':
                 value_list[-error] = '0'
             else:
-                value_list = '1'
+                value_list[-error] = '1'
             value = ''.join(map(str, value_list))
         return value
 
@@ -34,16 +36,19 @@ def checkHam(value):
 
 
 def removeHam(value):
+    # Removes parity bits from string that has Hamming ECC
     if isBinary(value):
         m = len(value)
-        r = calcRedundBits(m)
+        r = calcRedundBitsHammed(m)
         value_list = list(value)
-        for i in range(1, r):
-            value_list.pop(m-(2**(r - 1)))
-        return ''.join(map(str, value_list))
+        for i in range(r):
+            value_list.pop(m - (2**i))
+        result = ''.join(map(str, value_list))
+        return result
 
 
 def findError(arr, nr):
+    # Checks string with Hamming ECC for errors
     n = len(arr)
     result = 0
 
@@ -58,6 +63,7 @@ def findError(arr, nr):
 
 
 def isBinary(val):
+    # Evaluates if a given string contains only 1's and 0's
     binary = True
     for i in str(val):
         if i not in '10':
@@ -67,12 +73,20 @@ def isBinary(val):
 
 
 def calcRedundBits(m):
+    # Calculates the number of parity bits required to add Hamming ECC to binary number with m digits
     for r in range(m):
         if 2**r >= m + r + 1:
             return r
 
+def calcRedundBitsHammed(m):
+    # Calculates how many parity bits there would be in a Hamming ECC encoded binary number with m digits
+    for r in range(m):
+        if 2**r >= m:
+            return r
+
 
 def redundBitPos(data, r):
+    # Calculates the position of parity bits, and inserts 0's in their positions
     j = 0
     k = 1
     m = len(data)
@@ -89,7 +103,8 @@ def redundBitPos(data, r):
     return result[::-1]
 
 
-def calcParity(data, r):
+def calcParity(data):
+    # Given binary number with extra parity bits added as 0's, Calculates the value for each of those parity bits.
     ch = 0
     data = list(data)
     data.reverse()
