@@ -1,6 +1,6 @@
 This is a Hamming ECC program. It is a command line program that will take a .txt file as an argument. 
 
-$ python test.py <filename>
+`$ python test.py <filename>`
 
 This will add the Hamming bits to each byte of information in the text file, creating a file "transfer.txt" in the "data" folder. 
 It will then pass this file through a corruption program simulating the flipping of bits that could happen during some data transfers. 
